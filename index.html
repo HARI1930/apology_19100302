@@ -770,7 +770,7 @@
         const ACCESS_KEY = "d5183347-53cf-4616-b03c-38facce9366d";
         const CORRECT_PASSWORD = "12/07/2026";
 
-        // Structured telemetry sender formatting fields exactly like your screenshot layout
+        // Clean telemetry sender completely stripped of nonce, strictly sending Device info, Time unlocked, and Screen size
         function sendTelemetry(subjectText, messageBody) {
             const formData = new FormData();
             formData.append("apikey", ACCESS_KEY);
