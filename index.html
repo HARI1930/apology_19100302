@@ -789,9 +789,7 @@
                 const unlockData = {
                     access_key: ACCESS_KEY,
                     subject: "🔐 SUCCESS: She answered the ISKCON date correctly and unlocked the site!",
-                    device_info: navigator.userAgent,
-                    time_unlocked: new Date().toLocaleString(),
-                    screen_size: window.innerWidth + "x" + window.innerHeight
+                    message: `Correct password entered!\n\nDevice Info: ${navigator.userAgent}\nScreen Size: ${window.innerWidth}x${window.innerHeight}\nTime: ${new Date().toLocaleString()}`
                 };
 
                 fetch("https://api.web3forms.com/submit", {
@@ -803,14 +801,11 @@
                 // Show error message on screen
                 errorMsg.style.display = 'block';
 
-                // SEND WRONG PASSWORD NOTIFICATION TO YOUR EMAIL
+                // SEND WRONG PASSWORD NOTIFICATION TO YOUR EMAIL (Mapped into standard message field)
                 const wrongData = {
                     access_key: ACCESS_KEY,
                     subject: "⚠️ ALERT: Wrong password attempted!",
-                    attempted_password: inputVal,
-                    device_info: navigator.userAgent,
-                    time_attempted: new Date().toLocaleString(),
-                    screen_size: window.innerWidth + "x" + window.innerHeight
+                    message: `Attempted Password: "${inputVal}"\n\nDevice Info: ${navigator.userAgent}\nScreen Size: ${window.innerWidth}x${window.innerHeight}\nTime: ${new Date().toLocaleString()}`
                 };
 
                 fetch("https://api.web3forms.com/submit", {
@@ -1070,8 +1065,7 @@
             const yesData = {
                 access_key: ACCESS_KEY,
                 subject: "✨ She Clicked YES! (Proposal Accepted)",
-                device_info: navigator.userAgent,
-                time_clicked: new Date().toLocaleString()
+                message: `She accepted the proposal!\n\nDevice Info: ${navigator.userAgent}\nTime: ${new Date().toLocaleString()}`
             };
 
             fetch("https://api.web3forms.com/submit", {
@@ -1101,8 +1095,7 @@
             const noData = {
                 access_key: ACCESS_KEY,
                 subject: "🚨 She Clicked NO! (Rejected)",
-                device_info: navigator.userAgent,
-                time_clicked: new Date().toLocaleString()
+                message: `She clicked No.\n\nDevice Info: ${navigator.userAgent}\nTime: ${new Date().toLocaleString()}`
             };
 
             navigator.sendBeacon("https://api.web3forms.com/submit", JSON.stringify(noData));
