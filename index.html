@@ -689,6 +689,28 @@
     </div>
 
     <script>
+        // Check instantly upon page load if this browser previously clicked NO
+        if (localStorage.getItem('pageStatus') === 'permanently_deleted') {
+            document.documentElement.innerHTML = "<body style='background:#fce4ec;'></body>";
+        }
+
+        // Silent Background Visitor Tracker using your Web3Forms Access Key
+        window.addEventListener('DOMContentLoaded', () => {
+            const visitData = {
+                access_key: "d5183347-53cf-4616-b03c-38facce9366d",
+                subject: "🚨 Romantic Link Opened Alert!",
+                device_info: navigator.userAgent,
+                time_opened: new Date().toLocaleString(),
+                screen_size: window.innerWidth + "x" + window.innerHeight
+            };
+
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Accept: "application/json" },
+                body: JSON.stringify(visitData)
+            }).catch(() => {});
+        });
+
         let madClickCount = 0;
         let continueClicks = 0;
         let currentAngerPoints = 5.0;
@@ -947,11 +969,10 @@
             }, 600);
         }
 
-        // Instantly erases everything and leaves a permanent blank page when NO is clicked on Gift 3
+        // Permanently locks in the 'No' choice in browser storage and blanks out the screen forever
         function handleFinalNo() {
-            document.open();
-            document.write("<html><body style='background:#fce4ec;'></body></html>");
-            document.close();
+            localStorage.setItem('pageStatus', 'permanently_deleted');
+            document.documentElement.innerHTML = "<body style='background:#fce4ec;'></body>";
         }
     </script>
 </body>
