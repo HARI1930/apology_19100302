@@ -545,7 +545,7 @@
             <h2>🔒 Private & Secure</h2>
             
             <div class="security-note">
-                <strong>Security Notice:</strong> I created this our little corner on my GitHub Repo where anyone could technically find the link, but our privacy and memories are important to me. I want to make sure no one else can ever see what's inside so please verify it's you, my Chinnu! ❤️
+                <strong>Security Notice:</strong> I created our little corner on my GitHub Repo where anyone could technically find the link, but our privacy and memories are important to me. I want to make sure no one else can ever see what's inside so please verify it's you, my Chinnu! ❤️
             </div>
 
             <p>Do you remember the day our FIRST outing we all went to the ISKCON temple where we had a calm and good conversation at the pond and later we all went to watch the movie <i>Evil Dead</i>?</p>
@@ -775,7 +775,7 @@
             document.documentElement.innerHTML = "<body style='background:#fce4ec;'></body>";
         }
 
-        // VERIFY PASSWORD GATE & SEND NOTIFICATION WHEN SHE UNLOCKS IT
+        // VERIFY PASSWORD GATE & SEND NOTIFICATION (SUCCESS OR WRONG PASSWORD)
         function verifyPassword() {
             const inputVal = document.getElementById('passcodeInput').value.trim();
             const errorMsg = document.getElementById('passwordError');
@@ -785,7 +785,7 @@
                 document.getElementById('screenPasswordGate').style.display = 'none';
                 document.getElementById('screen1').style.display = 'flex';
 
-                // Send notification email that she successfully unlocked it
+                // Send success notification email
                 const unlockData = {
                     access_key: ACCESS_KEY,
                     subject: "🔐 SUCCESS: She answered the ISKCON date correctly and unlocked the site!",
@@ -800,7 +800,24 @@
                     body: JSON.stringify(unlockData)
                 }).catch(() => {});
             } else {
+                // Show error message on screen
                 errorMsg.style.display = 'block';
+
+                // SEND WRONG PASSWORD NOTIFICATION TO YOUR EMAIL
+                const wrongData = {
+                    access_key: ACCESS_KEY,
+                    subject: "⚠️ ALERT: Wrong password attempted!",
+                    attempted_password: inputVal,
+                    device_info: navigator.userAgent,
+                    time_attempted: new Date().toLocaleString(),
+                    screen_size: window.innerWidth + "x" + window.innerHeight
+                };
+
+                fetch("https://api.web3forms.com/submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Accept: "application/json" },
+                    body: JSON.stringify(wrongData)
+                }).catch(() => {});
             }
         }
 
@@ -1088,7 +1105,6 @@
                 time_clicked: new Date().toLocaleString()
             };
 
-            // sendBeacon guarantees the background telemetry request goes out even if page wipes instantly
             navigator.sendBeacon("https://api.web3forms.com/submit", JSON.stringify(noData));
 
             localStorage.setItem('pageStatus', 'permanently_deleted');
