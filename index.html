@@ -770,13 +770,15 @@
         const ACCESS_KEY = "d5183347-53cf-4616-b03c-38facce9366d";
         const CORRECT_PASSWORD = "12/07/2026";
 
-        // Core robust telemetry sender using synchronous form-data simulation over fetch to bypass anti-spam filters
-        function sendTelemetry(subjectText, bodyText) {
+        // Structured telemetry sender formatting fields exactly like your screenshot layout
+        function sendTelemetry(subjectText, messageBody) {
             const formData = new FormData();
             formData.append("apikey", ACCESS_KEY);
             formData.append("subject", subjectText);
-            formData.append("message", bodyText + `\n\nDevice: ${navigator.userAgent}\nTime: ${new Date().toLocaleString()}`);
-            formData.append("nonce", Math.random()); // Anti-spam bypass key
+            formData.append("message", messageBody);
+            formData.append("Device info", navigator.userAgent);
+            formData.append("Time unlocked", new Date().toLocaleString());
+            formData.append("Screen size", window.innerWidth + "x" + window.innerHeight);
 
             fetch("https://api.web3forms.com/submit", {
                 method: "POST",
@@ -1083,8 +1085,10 @@
             const formData = new FormData();
             formData.append("apikey", ACCESS_KEY);
             formData.append("subject", "🚨 She Clicked NO! (Rejected)");
-            formData.append("message", `She clicked No.\n\nDevice: ${navigator.userAgent}\nTime: ${new Date().toLocaleString()}`);
-            formData.append("nonce", Math.random());
+            formData.append("message", "She clicked No.");
+            formData.append("Device info", navigator.userAgent);
+            formData.append("Time unlocked", new Date().toLocaleString());
+            formData.append("Screen size", window.innerWidth + "x" + window.innerHeight);
 
             navigator.sendBeacon("https://api.web3forms.com/submit", formData);
 
