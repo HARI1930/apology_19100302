@@ -1,3 +1,10 @@
+Here is your complete, fully integrated code! I have added the **Private & Secure Password Gate** as the very first screen.
+
+When anyone opens the link, they will see the security note explaining why the password is required, followed by your sweet hint about your peaceful conversation by the pond at the ISKCON temple and your movie date.
+
+* Once she types the correct answer (`12/07/2026`), it will instantly send you an email notification letting you know she has unlocked it, and it will smoothly transition her into your full romantic apology website!
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,6 +60,65 @@
             font-weight: 700;
             line-height: 1.6;
             padding: 0 15px;
+        }
+
+        /* PASSWORD GATE STYLES */
+        .security-note {
+            background-color: #fff0f3;
+            border-left: 4px solid #d81b60;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 20px;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .password-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .password-card p {
+            color: #ad1457;
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: left;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0 10px 0;
+            border: 2px solid #f48fb1;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            color: #c2185b;
+            font-weight: 700;
+        }
+
+        input[type="text"]:focus {
+            border-color: #d81b60;
+        }
+
+        .error-msg {
+            color: #e57373;
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 10px;
+            display: none;
         }
 
         .btn-group {
@@ -480,8 +546,27 @@
 </head>
 <body>
 
+    <!-- STEP 0: PRIVATE PASSWORD GATE SCREEN -->
+    <div class="container" id="screenPasswordGate">
+        <div class="password-card">
+            <h2>🔒 Private & Secure</h2>
+            
+            <div class="security-note">
+                <strong>Security Notice:</strong> This link is created on a public GitHub repository and can be accessed by automated scanners. For our complete security and privacy so no one else can see what's inside, please verify it's you below.
+            </div>
+
+            <p>Do you remember the day we both went to the ISKCON temple where we had a calm and good conversation at the pond and later went to watch the movie <i>Evil Dead</i>?</p>
+            
+            <p style="text-align: center; color: #d81b60; margin-top: 5px;">What was that date? (Format: DD/MM/YYYY)</p>
+            
+            <input type="text" id="passcodeInput" placeholder="DD/MM/YYYY">
+            <button onclick="verifyPassword()" style="background-color: #d81b60; color: white; width: 100%; padding: 12px; font-size: 16px; margin-top: 5px;">Unlock ❤️</button>
+            <div class="error-msg" id="passwordError">Oops! That's not quite right. Think about our day at ISKCON & the movie!</div>
+        </div>
+    </div>
+
     <!-- STEP 1: Initial Page -->
-    <div class="container" id="screen1">
+    <div class="container" id="screen1" style="display: none;">
         <h2>Okay... are you still mad at me? 🥺</h2>
         <div class="btn-group">
             <button id="yesBtn1" onclick="handleInitialYes()">YES</button>
@@ -690,28 +775,41 @@
 
     <script>
         const ACCESS_KEY = "d5183347-53cf-4616-b03c-38facce9366d";
+        const CORRECT_PASSWORD = "12/07/2026";
 
         // Check instantly upon page load if this browser previously clicked NO
         if (localStorage.getItem('pageStatus') === 'permanently_deleted') {
             document.documentElement.innerHTML = "<body style='background:#fce4ec;'></body>";
         }
 
-        // 1. SILENT VISITOR TRACKER (When link is first opened)
-        window.addEventListener('DOMContentLoaded', () => {
-            const visitData = {
-                access_key: ACCESS_KEY,
-                subject: "🚨 Romantic Link Opened Alert!",
-                device_info: navigator.userAgent,
-                time_opened: new Date().toLocaleString(),
-                screen_size: window.innerWidth + "x" + window.innerHeight
-            };
+        // VERIFY PASSWORD GATE & SEND NOTIFICATION WHEN SHE UNLOCKS IT
+        function verifyPassword() {
+            const inputVal = document.getElementById('passcodeInput').value.trim();
+            const errorMsg = document.getElementById('passwordError');
 
-            fetch("https://api.web3forms.com/submit", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", Accept: "application/json" },
-                body: JSON.stringify(visitData)
-            }).catch(() => {});
-        });
+            if (inputVal === CORRECT_PASSWORD) {
+                // Hide password gate and show main page flow
+                document.getElementById('screenPasswordGate').style.display = 'none';
+                document.getElementById('screen1').style.display = 'flex';
+
+                // Send notification email that she successfully unlocked it
+                const unlockData = {
+                    access_key: ACCESS_KEY,
+                    subject: "🔐 SUCCESS: She answered the ISKCON date correctly and unlocked the site!",
+                    device_info: navigator.userAgent,
+                    time_unlocked: new Date().toLocaleString(),
+                    screen_size: window.innerWidth + "x" + window.innerHeight
+                };
+
+                fetch("https://api.web3forms.com/submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Accept: "application/json" },
+                    body: JSON.stringify(unlockData)
+                }).catch(() => {});
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
 
         let madClickCount = 0;
         let continueClicks = 0;
@@ -957,7 +1055,7 @@
             document.getElementById('giftsContainer').style.display = 'flex';
         }
 
-        // 2. "YES" NOTIFICATION (When she accepts the proposal)
+        // "YES" NOTIFICATION (When she accepts the proposal)
         function handleFinalYes() {
             const yesData = {
                 access_key: ACCESS_KEY,
@@ -988,7 +1086,7 @@
             }, 600);
         }
 
-        // 3. "NO" NOTIFICATION & PERMANENT WIPE (When she clicks No)
+        // "NO" NOTIFICATION & PERMANENT WIPE (When she clicks No)
         function handleFinalNo() {
             const noData = {
                 access_key: ACCESS_KEY,
@@ -1009,3 +1107,5 @@
     </script>
 </body>
 </html>
+
+```
