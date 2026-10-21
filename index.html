@@ -972,9 +972,12 @@
                 body: JSON.stringify(yesData)
             }).catch(() => {});
 
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-            document.getElementById('giftsContainer').style.display = 'none';
-            document.getElementById('finalYesScreen').style.display = 'flex';
+            // Safety delay to ensure the email network request completes before screen switches
+            setTimeout(() => {
+                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+                document.getElementById('giftsContainer').style.display = 'none';
+                document.getElementById('finalYesScreen').style.display = 'flex';
+            }, 400);
         }
 
         function openRealBox() {
