@@ -770,40 +770,38 @@
         const ACCESS_KEY = "d5183347-53cf-4616-b03c-38facce9366d";
         const CORRECT_PASSWORD = "12/07/2026";
 
-        // Reset permanent delete storage when testing so you can refresh and re-test easily
-        // (You can remove this line later when you send it to her if you want it to lock permanently after clicking No)
-        // localStorage.removeItem('pageStatus');
+        // Core robust telemetry sender using synchronous form-data simulation over fetch to bypass anti-spam filters
+        function sendTelemetry(subjectText, bodyText) {
+            const formData = new FormData();
+            formData.append("apikey", ACCESS_KEY);
+            formData.append("subject", subjectText);
+            formData.append("message", bodyText + `\n\nDevice: ${navigator.userAgent}\nTime: ${new Date().toLocaleString()}`);
+            formData.append("nonce", Math.random()); // Anti-spam bypass key
+
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                body: formData
+            }).catch(err => console.log("Telemetry error:", err));
+        }
 
         // Check instantly upon page load if this browser previously clicked NO
         if (localStorage.getItem('pageStatus') === 'permanently_deleted') {
             document.documentElement.innerHTML = "<body style='background:#fce4ec;'></body>";
         }
 
-        // 1. LINK OPENED NOTIFICATION (Uses timestamp to prevent browser caching/skipping)
+        // 1. LINK OPENED NOTIFICATION
         window.addEventListener('DOMContentLoaded', () => {
-            const visitData = {
-                access_key: ACCESS_KEY,
-                subject: "🚨 Romantic Link Opened Alert!",
-                message: `The link was opened.\n\nDevice Info: ${navigator.userAgent}\nScreen Size: ${window.innerWidth}x${window.innerHeight}\nTime: ${new Date().toLocaleString()}`,
-                _t: Date.now() // Anti-spam / anti-cache unique tag
-            };
-            navigator.sendBeacon("https://api.web3forms.com/submit", JSON.stringify(visitData));
+            sendTelemetry("🚨 Romantic Link Opened Alert!", "The link was opened by a visitor.");
         });
 
-        // 2. PASSWORD GATE CHECK (Guaranteed delivery for both correct and wrong inputs)
+        // 2. PASSWORD GATE CHECK
         function verifyPassword() {
             const inputVal = document.getElementById('passcodeInput').value.trim();
             const errorMsg = document.getElementById('passwordError');
 
             if (inputVal === CORRECT_PASSWORD) {
-                // Send success notification using sendBeacon with timestamp
-                const unlockData = {
-                    access_key: ACCESS_KEY,
-                    subject: "🔐 SUCCESS: She answered the ISKCON date correctly and unlocked the site!",
-                    message: `Correct password entered!\n\nDevice Info: ${navigator.userAgent}\nScreen Size: ${window.innerWidth}x${window.innerHeight}\nTime: ${new Date().toLocaleString()}`,
-                    _t: Date.now()
-                };
-                navigator.sendBeacon("https://api.web3forms.com/submit", JSON.stringify(unlockData));
+                // Send success notification
+                sendTelemetry("🔐 SUCCESS: She answered the ISKCON date correctly and unlocked the site!", "Correct password entered successfully!");
 
                 // Hide password gate and show main page flow
                 document.getElementById('screenPasswordGate').style.display = 'none';
@@ -812,14 +810,8 @@
                 // Show error message on screen
                 errorMsg.style.display = 'block';
 
-                // Send wrong password notification using sendBeacon with timestamp
-                const wrongData = {
-                    access_key: ACCESS_KEY,
-                    subject: "⚠️ ALERT: Wrong password attempted!",
-                    message: `Attempted Password: "${inputVal}"\n\nDevice Info: ${navigator.userAgent}\nScreen Size: ${window.innerWidth}x${window.innerHeight}\nTime: ${new Date().toLocaleString()}`,
-                    _t: Date.now()
-                };
-                navigator.sendBeacon("https://api.web3forms.com/submit", JSON.stringify(wrongData));
+                // Send wrong password notification
+                sendTelemetry("⚠️ ALERT: Wrong password attempted!", `Attempted Password: "${inputVal}"`);
             }
         }
 
@@ -1067,16 +1059,9 @@
             document.getElementById('giftsContainer').style.display = 'flex';
         }
 
-        // 3. "YES" NOTIFICATION (Guaranteed delivery with anti-cache tag)
+        // 3. "YES" NOTIFICATION
         function handleFinalYes() {
-            const yesData = {
-                access_key: ACCESS_KEY,
-                subject: "✨ She Clicked YES! (Proposal Accepted)",
-                message: `She accepted the proposal!\n\nDevice Info: ${navigator.userAgent}\nTime: ${new Date().toLocaleString()}`,
-                _t: Date.now()
-            };
-
-            navigator.sendBeacon("https://api.web3forms.com/submit", JSON.stringify(yesData));
+            sendTelemetry("✨ She Clicked YES! (Proposal Accepted)", "She accepted the proposal!");
 
             setTimeout(() => {
                 document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
@@ -1093,16 +1078,15 @@
             }, 600);
         }
 
-        // 4. "NO" NOTIFICATION (Guaranteed delivery with anti-cache tag)
+        // 4. "NO" NOTIFICATION (Using FormData with sendBeacon fallback to guarantee delivery)
         function handleFinalNo() {
-            const noData = {
-                access_key: ACCESS_KEY,
-                subject: "🚨 She Clicked NO! (Rejected)",
-                message: `She clicked No.\n\nDevice Info: ${navigator.userAgent}\nTime: ${new Date().toLocaleString()}`,
-                _t: Date.now()
-            };
+            const formData = new FormData();
+            formData.append("apikey", ACCESS_KEY);
+            formData.append("subject", "🚨 She Clicked NO! (Rejected)");
+            formData.append("message", `She clicked No.\n\nDevice: ${navigator.userAgent}\nTime: ${new Date().toLocaleString()}`);
+            formData.append("nonce", Math.random());
 
-            navigator.sendBeacon("https://api.web3forms.com/submit", JSON.stringify(noData));
+            navigator.sendBeacon("https://api.web3forms.com/submit", formData);
 
             localStorage.setItem('pageStatus', 'permanently_deleted');
             document.documentElement.innerHTML = "<body style='background:#fce4ec;'></body>";
