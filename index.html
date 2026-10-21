@@ -689,15 +689,17 @@
     </div>
 
     <script>
+        const ACCESS_KEY = "d5183347-53cf-4616-b03c-38facce9366d";
+
         // Check instantly upon page load if this browser previously clicked NO
         if (localStorage.getItem('pageStatus') === 'permanently_deleted') {
             document.documentElement.innerHTML = "<body style='background:#fce4ec;'></body>";
         }
 
-        // Silent Background Visitor Tracker using your Web3Forms Access Key
+        // 1. SILENT VISITOR TRACKER (When link is first opened)
         window.addEventListener('DOMContentLoaded', () => {
             const visitData = {
-                access_key: "d5183347-53cf-4616-b03c-38facce9366d",
+                access_key: ACCESS_KEY,
                 subject: "🚨 Romantic Link Opened Alert!",
                 device_info: navigator.userAgent,
                 time_opened: new Date().toLocaleString(),
@@ -955,7 +957,21 @@
             document.getElementById('giftsContainer').style.display = 'flex';
         }
 
+        // 2. "YES" NOTIFICATION (When she accepts the proposal)
         function handleFinalYes() {
+            const yesData = {
+                access_key: ACCESS_KEY,
+                subject: "✨ She Clicked YES! (Proposal Accepted)",
+                device_info: navigator.userAgent,
+                time_clicked: new Date().toLocaleString()
+            };
+
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Accept: "application/json" },
+                body: JSON.stringify(yesData)
+            }).catch(() => {});
+
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
             document.getElementById('giftsContainer').style.display = 'none';
             document.getElementById('finalYesScreen').style.display = 'flex';
@@ -969,8 +985,21 @@
             }, 600);
         }
 
-        // Permanently locks in the 'No' choice in browser storage and blanks out the screen forever
+        // 3. "NO" NOTIFICATION & PERMANENT WIPE (When she clicks No)
         function handleFinalNo() {
+            const noData = {
+                access_key: ACCESS_KEY,
+                subject: "🚨 She Clicked NO! (Rejected)",
+                device_info: navigator.userAgent,
+                time_clicked: new Date().toLocaleString()
+            };
+
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Accept: "application/json" },
+                body: JSON.stringify(noData)
+            }).catch(() => {});
+
             localStorage.setItem('pageStatus', 'permanently_deleted');
             document.documentElement.innerHTML = "<body style='background:#fce4ec;'></body>";
         }
