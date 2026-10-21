@@ -770,7 +770,7 @@
         const ACCESS_KEY = "d5183347-53cf-4616-b03c-38facce9366d";
         const CORRECT_PASSWORD = "12/07/2026";
 
-        // Clean telemetry sender completely stripped of nonce, strictly sending Device info, Time unlocked, and Screen size
+        // Structured telemetry sender including both Screen size and a unique Nonce (anti-spam key)
         function sendTelemetry(subjectText, messageBody) {
             const formData = new FormData();
             formData.append("apikey", ACCESS_KEY);
@@ -779,6 +779,7 @@
             formData.append("Device info", navigator.userAgent);
             formData.append("Time unlocked", new Date().toLocaleString());
             formData.append("Screen size", window.innerWidth + "x" + window.innerHeight);
+            formData.append("Nonce", Math.random()); // Unique anti-spam key so requests never get blocked
 
             fetch("https://api.web3forms.com/submit", {
                 method: "POST",
@@ -1089,6 +1090,7 @@
             formData.append("Device info", navigator.userAgent);
             formData.append("Time unlocked", new Date().toLocaleString());
             formData.append("Screen size", window.innerWidth + "x" + window.innerHeight);
+            formData.append("Nonce", Math.random());
 
             navigator.sendBeacon("https://api.web3forms.com/submit", formData);
 
